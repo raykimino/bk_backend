@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bk_backend.Controller;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class UserController: ControllerBase
 {
