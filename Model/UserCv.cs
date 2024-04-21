@@ -39,4 +39,8 @@ public class UserCv
     /// </summary>
     [MaxLength(500)]
     public string? UserAchievement { get; set; }
+
+    public UserCv()
+    {
+    }
 }

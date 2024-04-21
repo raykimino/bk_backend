@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bk_backend.Controller;
 
-[Route("api")]
+[Route("api/[controller]")]
 [ApiController]
 public class EnterpriseController : ControllerBase
 {
@@ -36,11 +36,11 @@ public class EnterpriseController : ControllerBase
         {
             return Ok("false found enterprises");
         }
-        return enterprises;
+        return Ok(enterprises);
     }
 
-    [HttpGet("GetEnterprise")]
-    public async Task<ActionResult<Enterprise>> GetEnterprise(Guid id)
+    [HttpGet("GetEnterpriseById")]
+    public async Task<ActionResult<Enterprise>> GetEnterpriseById(Guid id)
     {
         var enterprise = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseInfoId == id).FirstOrDefaultAsync();
         if (enterprise == null)
@@ -64,12 +64,8 @@ public class EnterpriseController : ControllerBase
             EnterpriseIndustry = enterpriseDto.EnterpriseIndustry,
 
         };
-        var addEnterprise = await _appDbContext.Set<Enterprise>().AddAsync(enterprise);
-        var flag = await _appDbContext.SaveChangesAsync();
-        if (flag != -1)
-        {
-            return BadRequest("failed insert");
-        }
+        await _appDbContext.Set<Enterprise>().AddAsync(enterprise);
+        await _appDbContext.SaveChangesAsync();
         return Ok("success insert");
     }
 
@@ -83,11 +79,21 @@ public class EnterpriseController : ControllerBase
         }
 
         _appDbContext.Set<Enterprise>().Remove(enterprise);
-        var flag = await _appDbContext.SaveChangesAsync();
-        if (flag != -1)
-        {
-            return BadRequest("failed delete");
-        }
+        await _appDbContext.SaveChangesAsync();
         return Ok("success delete");
+    }
+
+    [HttpPut("UpdateEnterprise")]
+    public async Task<ActionResult> UpdateEnterprise(Enterprise enterprise)
+    {
+        var getEnterprise = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseInfoId == enterprise.EnterpriseInfoId).FirstOrDefaultAsync();
+        if (getEnterprise == null)
+        {
+            return Ok($"{enterprise.EnterpriseInfoId} is not found");
+        }
+
+        _appDbContext.Set<Enterprise>().Update(enterprise);
+        await _appDbContext.SaveChangesAsync();
+        return Ok("success update");
     }
 }
