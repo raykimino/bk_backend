@@ -8,7 +8,7 @@ namespace bk_backend.Model;
 public class Job
 {
     [Key]
-    public required Guid JobId { get; set; } = new Guid();
+    public required Guid JobId { get; set; }
     public Guid EnterpriseId { get; set; }
     /// <summary>
     /// 招聘名称
