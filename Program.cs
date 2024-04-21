@@ -1,3 +1,6 @@
+using bk_backend.EFCore;
+using Microsoft.EntityFrameworkCore;
+
 namespace bk_backend;
 
 public class Program
@@ -5,6 +8,15 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        // SQL Conn
+        var mysqlConnectionStrings = builder.Configuration.GetConnectionString("mysql");
+        if (!String.IsNullOrEmpty(mysqlConnectionStrings))
+        {
+            builder.Services.AddDbContext<AppDbContext>(o =>
+                        o.UseMySQL(mysqlConnectionStrings));
+        }
+        
 
         // Add services to the container.
         builder.Services.AddAuthorization();
