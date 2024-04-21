@@ -50,7 +50,7 @@ public class EnterpriseController : ControllerBase
         return Ok(enterprise);
     }
 
-    [HttpPost("InsertEnterprise")]
+    [HttpPost]
     public async Task<ActionResult> InsertEnterprise(EnterpriseDto enterpriseDto)
     {
         Enterprise enterprise = new Enterprise()
@@ -69,7 +69,7 @@ public class EnterpriseController : ControllerBase
         return Ok("success insert");
     }
 
-    [HttpDelete("DeleteEnterprise")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteEnterprise(Guid id)
     {
         var enterprise = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseInfoId == id).FirstOrDefaultAsync();
@@ -83,7 +83,7 @@ public class EnterpriseController : ControllerBase
         return Ok("success delete");
     }
 
-    [HttpPut("UpdateEnterprise")]
+    [HttpPut]
     public async Task<ActionResult> UpdateEnterprise(Enterprise enterprise)
     {
         var getEnterprise = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseInfoId == enterprise.EnterpriseInfoId).FirstOrDefaultAsync();

@@ -55,7 +55,7 @@ public class UserCvController : ControllerBase
         return Ok(userCvs);
     }
 
-    [HttpPost("InsertUserCv")]
+    [HttpPost]
     public async Task<ActionResult> InsertUserCv(UserCvDto userCvDto)
     {
         UserCv userCv = new UserCv()
@@ -77,7 +77,7 @@ public class UserCvController : ControllerBase
         return Ok("success insert");
     }
 
-    [HttpDelete("DeleteUserCvById")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteUserCvById(Guid id)
     {
         var userCv = await _appDbContext.Set<UserCv>().Where(u => u.UserCvId == id).FirstOrDefaultAsync();
@@ -91,7 +91,7 @@ public class UserCvController : ControllerBase
         return Ok("success delete");
     }
 
-    [HttpPut("UpdateUserCv")]
+    [HttpPut]
     public async Task<ActionResult> UpdateUserCv(UserCv userCv)
     {
         var getUserCv = await _appDbContext.Set<UserCv>().Where(u => u.UserCvId == userCv.UserCvId).FirstOrDefaultAsync();
