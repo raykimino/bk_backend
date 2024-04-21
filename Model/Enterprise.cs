@@ -21,4 +21,9 @@ public class Enterprise
     public string? EnterpriseNature { get; set; }
     [MaxLength(100)]
     public string? EnterpriseArea { get; set; }
+
+    public Enterprise()
+    {
+
+    }
 }
