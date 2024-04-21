@@ -17,7 +17,7 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("T_User");
-        modelBuilder.Entity<UserCv>().ToTable("UserCv");
+        modelBuilder.Entity<UserCv>().ToTable("T_UserCv");
         modelBuilder.Entity<Enterprise>().ToTable("T_Enterprise");
         modelBuilder.Entity<Job>().ToTable("T_Job");
         
