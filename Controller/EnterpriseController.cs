@@ -92,7 +92,15 @@ public class EnterpriseController : ControllerBase
             return Ok($"{enterprise.EnterpriseInfoId} is not found");
         }
 
-        _appDbContext.Set<Enterprise>().Update(enterprise);
+        await _appDbContext.Set<Enterprise>()
+            .Where(e => e.EnterpriseInfoId == enterprise.EnterpriseInfoId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(p => p.EnterpriseAddress, enterprise.EnterpriseAddress)
+                .SetProperty(p => p.EnterpriseArea,enterprise.EnterpriseArea)
+                .SetProperty(p=>p.EnterpriseName,enterprise.EnterpriseName)
+                .SetProperty(p=>p.EnterpriseAreasInvolved,enterprise.EnterpriseAreasInvolved)
+                .SetProperty(p=>p.EnterpriseIndustry,enterprise.EnterpriseIndustry)
+                .SetProperty(p =>p.EnterpriseNature,enterprise.EnterpriseNature));
         await _appDbContext.SaveChangesAsync();
         return Ok("success update");
     }
