@@ -16,6 +16,19 @@ public class JobController : ControllerBase
         _dbContext = dbContext;
     }
 
+    public class JobOutDto
+    {
+        public required Guid JobId { get; set; }
+        public Guid EnterpriseId { get; set; }
+        public required string EnterpriseName { get; set; }
+        public required string RecruitName { get; set; }
+        public int Salary { get; set; } = 0;
+        public required string Degree { get; set; }
+        public required string RecruitmentProfessional { get; set; }
+        public required string WorkSpace { get; set; }
+        public required string JobInfo { get; set; }
+    }
+    
     public class NewJobDto
     {
         public Guid EnterpriseId { get; set; }
@@ -31,12 +44,12 @@ public class JobController : ControllerBase
     {
         public Guid JobId { get; set; }
         public Guid EnterpriseId { get; set; }
-        public string? RecruitName { get; set; }
+        public required  string RecruitName { get; set; }
         public int Salary { get; set; }
-        public string? Degree { get; set; }
-        public string? RecruitmentProfessional { get; set; }
-        public string? WorkSpace { get; set; }
-        public string? JobInfo { get; set; }
+        public required  string Degree { get; set; }
+        public required  string RecruitmentProfessional { get; set; }
+        public required  string WorkSpace { get; set; }
+        public required string JobInfo { get; set; }
     }
 
 
@@ -49,7 +62,33 @@ public class JobController : ControllerBase
     [HttpGet("jobList")]
     public async Task<ActionResult> GetJobList()
     {
-        return Ok(await _dbContext.Jobs.AsNoTracking().ToListAsync());
+        List<Job> jobs = await _dbContext.Jobs.AsNoTracking().ToListAsync();
+        if (jobs.Count < 1)
+        {
+            return Ok("not job exists");
+        }
+        List<JobOutDto> jobOutDtos = new List<JobOutDto>();
+        foreach (var item in jobs)
+        {
+            Enterprise enterprise = await _dbContext.Enterprises.Where(e => e.EnterpriseInfoId == item.EnterpriseId).FirstOrDefaultAsync();
+            if (enterprise == null)
+            {
+                return Ok("enterprise is not found!");
+            }
+            jobOutDtos.Add(new JobOutDto()
+            {
+                EnterpriseName = enterprise.EnterpriseName,
+                Degree = item.Degree,
+                EnterpriseId = item.EnterpriseId,
+                JobId = item.JobId,
+                JobInfo = item.JobInfo,
+                Salary = item.Salary,
+                RecruitName = item.RecruitName,
+                RecruitmentProfessional = item.RecruitmentProfessional,
+                WorkSpace = item.WorkSpace
+            });
+        }
+        return Ok(jobOutDtos);
     }
 
     [HttpPost]
