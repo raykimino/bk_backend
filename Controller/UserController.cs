@@ -24,6 +24,7 @@ public class UserController: ControllerBase
     {
         public string UserName{ get; set; } = null!;
         public string Password{ get; set; } = null!;
+        public int UserType { get; set; }
     }
     
     public class UserListDto
@@ -47,7 +48,7 @@ public class UserController: ControllerBase
     }
 
 
-    [HttpPost("register")]
+    [HttpPost("Register")]
     public async Task<ActionResult> Register(RegisterDto registerDto)
     {
         var isUserExist = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == registerDto.UserName);
@@ -67,7 +68,7 @@ public class UserController: ControllerBase
         
         await _dbContext.Users.AddAsync(newUser);
         await _dbContext.SaveChangesAsync();
-        return Ok();
+        return Ok("success");
     }
 
     [HttpPost("Login")]
@@ -79,12 +80,17 @@ public class UserController: ControllerBase
             return Ok("userName or pwd incorrect");
         }
 
+        if (isUserExist.UserType != loginDto.UserType)
+        {
+            return Ok("userName or pwd incorrect");
+        }
+        
         if (ToMd5(loginDto.Password) != isUserExist.Password)
         {
             return Ok("userName or pwd incorrect");
         }
-
-        return Ok();
+        
+        return Ok(isUserExist);
     }
 
     [HttpGet("userList")]

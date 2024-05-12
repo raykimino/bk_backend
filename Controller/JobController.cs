@@ -73,7 +73,7 @@ public class JobController : ControllerBase
             Enterprise enterprise = await _dbContext.Enterprises.Where(e => e.EnterpriseInfoId == item.EnterpriseId).FirstOrDefaultAsync();
             if (enterprise == null)
             {
-                return Ok("enterprise is not found!");
+                continue;
             }
             jobOutDtos.Add(new JobOutDto()
             {

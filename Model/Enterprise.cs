@@ -22,6 +22,8 @@ public class Enterprise
     [MaxLength(100)]
     public string? EnterpriseArea { get; set; }
 
+    [MaxLength(100)]
+    public Guid EnterpriseUser { get; set; }
     public Enterprise()
     {
 

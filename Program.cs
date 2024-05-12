@@ -8,7 +8,17 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
+        builder.Services.AddCors(option =>
+        {
+            option.AddPolicy("MyCors", opt =>
+            {
+                opt.AllowAnyHeader()
+                .AllowAnyOrigin()
+                .AllowAnyMethod();
+            });
+        });
+
         // SQL Conn
         var mysqlConnectionStrings = builder.Configuration.GetConnectionString("mysql");
         if (!String.IsNullOrEmpty(mysqlConnectionStrings))
@@ -34,6 +44,7 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        app.UseCors("MyCors");
         app.UseAuthorization();
         
         app.MapControllers();

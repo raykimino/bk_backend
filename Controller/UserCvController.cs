@@ -19,16 +19,28 @@ public class UserCvController : ControllerBase
     public class UserCvDto
     {
         public Guid UserId { get; set; }
-        public required string UserRealName { get; set; }
-        public required string UserPhone { get; set; }
-        public required string UserEmail { get; set; }
-        public required string UserAddress { get; set; }
-        public required string UserSchoolName { get; set; }
-        public required string UserDegree { get; set; }
-        public required string UserMajor { get; set; } 
-        public required string UserAbility { get; set; }
-        public required string UserProjectExp { get; set; }
-        public required string UserAchievement { get; set; }
+        public string? UserRealName { get; set; }
+        public string? UserGender { get; set; }
+        public string? UserBirthDay { get; set; }
+        public string? UserPolicyFace { get; set; }
+        public string? UserPhone { get; set; }
+        public string? UserEmail { get; set; }
+        public string? UserBirthPlace { get; set; }
+        public string? AimWorkPlace { get; set; }
+        public string? AimJob { get; set; }
+        public string? AimJobPosition { get; set; }
+        public string? JobSeekingStatus { get; set; }
+        public string? SalaryStart { get; set; }
+        public string? SalaryEnd { get; set; }
+        public string? StartWorkTime { get; set; }
+        public string? WorkType { get; set; } 
+        public string? UserSkill { get; set; }
+        public string? UserAchievement { get; set; }
+        public string? UserProjectExp { get; set; }
+        public string? UserSchoolName { get; set; }
+        public string? UserMajor { get; set; }
+        public string? UserDegree { get; set; }
+        
     }
     
     [HttpGet("GetUserCvById")]
@@ -37,7 +49,7 @@ public class UserCvController : ControllerBase
         var userCv = await _appDbContext.Set<UserCv>().Where(u => u.UserCvId == id).FirstOrDefaultAsync();
         if (userCv == null)
         {
-            return Ok($"{id} is not found");
+            return Ok();
         }
 
         return Ok(userCv);
@@ -60,21 +72,33 @@ public class UserCvController : ControllerBase
     {
         UserCv userCv = new UserCv()
         {
-            UserCvId = new Guid(),
-            UserRealName = userCvDto.UserRealName,   
+            UserCvId = Guid.NewGuid(),
+            UserId = userCvDto.UserId,
+            UserRealName = userCvDto.UserRealName,
+            UserGender = userCvDto.UserGender,
+            UserBirthDay = userCvDto.UserBirthDay,
+            UserPolicyFace = userCvDto.UserPolicyFace,
             UserPhone = userCvDto.UserPhone,
-            UserEmail = userCvDto.UserEmail,  
-            UserAddress = userCvDto.UserAddress,    
-            UserSchoolName = userCvDto.UserSchoolName,  
-            UserDegree = userCvDto.UserDegree, 
-            UserMajor = userCvDto.UserMajor,  
-            UserAbility = userCvDto.UserAbility,    
+            UserEmail = userCvDto.UserEmail,
+            UserBirthPlace = userCvDto.UserBirthPlace,
+            AimWorkPlace = userCvDto.AimWorkPlace,
+            AimJob = userCvDto.AimJob,
+            AimJobPosition = userCvDto.AimJobPosition,
+            JobSeekingStatus = userCvDto.JobSeekingStatus,
+            SalaryStart = userCvDto.SalaryStart,
+            SalaryEnd = userCvDto.SalaryEnd,
+            StartWorkTime  = userCvDto.StartWorkTime,
+            WorkType  = userCvDto.WorkType,
+            UserSkill = userCvDto.UserSkill,
+            UserAchievement = userCvDto.UserAchievement,
             UserProjectExp = userCvDto.UserProjectExp,
-            UserAchievement = userCvDto.UserAchievement     
+            UserSchoolName = userCvDto.UserSchoolName,
+            UserMajor = userCvDto.UserMajor,
+            UserDegree = userCvDto.UserDegree
         };
         await _appDbContext.Set<UserCv>().AddAsync(userCv);
         await _appDbContext.SaveChangesAsync();
-        return Ok("success insert");
+        return Ok("success");
     }
 
     [HttpDelete]
