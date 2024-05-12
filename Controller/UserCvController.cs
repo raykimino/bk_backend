@@ -18,35 +18,35 @@ public class UserCvController : ControllerBase
 
     public class UserCvDto
     {
-        public Guid UserId { get; set; }
-        public string? UserRealName { get; set; }
-        public string? UserGender { get; set; }
-        public string? UserBirthDay { get; set; }
-        public string? UserPolicyFace { get; set; }
-        public string? UserPhone { get; set; }
-        public string? UserEmail { get; set; }
-        public string? UserBirthPlace { get; set; }
-        public string? AimWorkPlace { get; set; }
-        public string? AimJob { get; set; }
-        public string? AimJobPosition { get; set; }
-        public string? JobSeekingStatus { get; set; }
-        public string? SalaryStart { get; set; }
-        public string? SalaryEnd { get; set; }
-        public string? StartWorkTime { get; set; }
-        public string? WorkType { get; set; } 
-        public string? UserSkill { get; set; }
-        public string? UserAchievement { get; set; }
-        public string? UserProjectExp { get; set; }
-        public string? UserSchoolName { get; set; }
-        public string? UserMajor { get; set; }
-        public string? UserDegree { get; set; }
+        public Guid userId { get; set; }
+        public string? userRealName { get; set; }
+        public string? userGender { get; set; }
+        public string? userBirthDay { get; set; }
+        public string? userPolicyFace { get; set; }
+        public string? userPhone { get; set; }
+        public string? userEmail { get; set; }
+        public string? userBirthPlace { get; set; }
+        public string? aimWorkPlace { get; set; }
+        public string? aimJob { get; set; }
+        public string? aimJobPosition { get; set; }
+        public string? jobSeekingStatus { get; set; }
+        public string? salaryStart { get; set; }
+        public string? salaryEnd { get; set; }
+        public string? startWorkTime { get; set; }
+        public string? workType { get; set; } 
+        public string? userSkill { get; set; }
+        public string? userAchievement { get; set; }
+        public string? userProjectExp { get; set; }
+        public string? userSchoolName { get; set; }
+        public string? userMajor { get; set; }
+        public string? userDegree { get; set; }
         
     }
     
     [HttpGet("GetUserCvById")]
-    public async Task<ActionResult<UserCv>> GetUserCvById(Guid id)
+    public async Task<ActionResult> GetUserCvById(Guid id)
     {
-        var userCv = await _appDbContext.Set<UserCv>().Where(u => u.UserCvId == id).FirstOrDefaultAsync();
+        var userCv = await _appDbContext.Set<UserCv>().Where(u => u.UserId == id).FirstOrDefaultAsync();
         if (userCv == null)
         {
             return Ok();
@@ -73,28 +73,28 @@ public class UserCvController : ControllerBase
         UserCv userCv = new UserCv()
         {
             UserCvId = Guid.NewGuid(),
-            UserId = userCvDto.UserId,
-            UserRealName = userCvDto.UserRealName,
-            UserGender = userCvDto.UserGender,
-            UserBirthDay = userCvDto.UserBirthDay,
-            UserPolicyFace = userCvDto.UserPolicyFace,
-            UserPhone = userCvDto.UserPhone,
-            UserEmail = userCvDto.UserEmail,
-            UserBirthPlace = userCvDto.UserBirthPlace,
-            AimWorkPlace = userCvDto.AimWorkPlace,
-            AimJob = userCvDto.AimJob,
-            AimJobPosition = userCvDto.AimJobPosition,
-            JobSeekingStatus = userCvDto.JobSeekingStatus,
-            SalaryStart = userCvDto.SalaryStart,
-            SalaryEnd = userCvDto.SalaryEnd,
-            StartWorkTime  = userCvDto.StartWorkTime,
-            WorkType  = userCvDto.WorkType,
-            UserSkill = userCvDto.UserSkill,
-            UserAchievement = userCvDto.UserAchievement,
-            UserProjectExp = userCvDto.UserProjectExp,
-            UserSchoolName = userCvDto.UserSchoolName,
-            UserMajor = userCvDto.UserMajor,
-            UserDegree = userCvDto.UserDegree
+            UserId = userCvDto.userId,
+            UserRealName = userCvDto.userRealName,
+            UserGender = userCvDto.userGender,
+            UserBirthDay = userCvDto.userBirthDay,
+            UserPolicyFace = userCvDto.userPolicyFace,
+            UserPhone = userCvDto.userPhone,
+            UserEmail = userCvDto.userEmail,
+            UserBirthPlace = userCvDto.userBirthPlace,
+            AimWorkPlace = userCvDto.aimWorkPlace,
+            AimJob = userCvDto.aimJob,
+            AimJobPosition = userCvDto.aimJobPosition,
+            JobSeekingStatus = userCvDto.jobSeekingStatus,
+            SalaryStart = userCvDto.salaryStart,
+            SalaryEnd = userCvDto.salaryEnd,
+            StartWorkTime  = userCvDto.startWorkTime,
+            WorkType  = userCvDto.workType,
+            UserSkill = userCvDto.userSkill,
+            UserAchievement = userCvDto.userAchievement,
+            UserProjectExp = userCvDto.userProjectExp,
+            UserSchoolName = userCvDto.userSchoolName,
+            UserMajor = userCvDto.userMajor,
+            UserDegree = userCvDto.userDegree
         };
         await _appDbContext.Set<UserCv>().AddAsync(userCv);
         await _appDbContext.SaveChangesAsync();
@@ -123,7 +123,7 @@ public class UserCvController : ControllerBase
         {
             return Ok($"{userCv.UserCvId} is not found");
         }
-
+        _appDbContext.Entry(getUserCv).State = EntityState.Detached;
         _appDbContext.Set<UserCv>().Update(userCv);
         await _appDbContext.SaveChangesAsync();
         return Ok("success update");

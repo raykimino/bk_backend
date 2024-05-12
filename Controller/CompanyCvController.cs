@@ -16,27 +16,42 @@ public class CompanyCvController : ControllerBase
         _dbContext = dbContext;
     }
 
+    public class UpdateCvStuta
+    {
+        public Guid id { get; set; }
+        public int cvStatus { get; set; }
+    }
     public class CompanyCvOutDto
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
-        public Guid CvId { get; set; }
-        public Guid EnterpriseId { get; set; }
-        public string? EnterpriseName { get; set; }
-        public int CvStatus { get; set; }
-        public string? Salary { get; set; }
-        public string? Degree { get; set; }
-        public string? RecruitmentProfessional { get; set; }
-        public string? WorkSpace { get; set; }
-        public string? JobInfo { get; set; }
+        public Guid userId { get; set; }
+        public Guid cvId { get; set; }
+        public Guid enterpriseId { get; set; }
+        public string? enterpriseName { get; set; }
+        public int cvStatus { get; set; }
+        public string? salary { get; set; }
+        public string? degree { get; set; }
+        public string? recruitmentProfessional { get; set; }
+        public string? workSpace { get; set; }
+        public string? jobInfo { get; set; }
+        public string? recruitName { get; set; }
     }
-
+    public class GetUserBaseInfoAndCv
+    {
+        public Guid id { get; set; }
+        public string? name { get; set; }
+        public string? schoolName { get; set; }
+        public string? majorName { get; set; }
+        public string? aimPosition { get; set; }
+        public Guid? jobId { get; set; }
+        public int cvStatus { get; set; }
+    }
     public class CompanyCvInputDto
     {
         public Guid UserId { get; set; }
         public Guid CvId { get; set; }
+        public Guid JobId { get; set; }
         public Guid EnterpriseId { get; set; }
-        public int CvStatus { get; set; }
     }
 
     [HttpGet("GetListCvByUserId")]
@@ -48,30 +63,29 @@ public class CompanyCvController : ControllerBase
         {
             return Ok("你未投递过简历");
         }
-        foreach (CompanyCv companyCv in companyCvs)
+        foreach (CompanyCv companyCv in companyCvs)//每个简历,组织数据
         {
-            List<Job> jobs = await _dbContext.Jobs.Where(j => j.EnterpriseId == companyCv.EnterpriseId).ToListAsync();
+            Job job = await _dbContext.Jobs.Where(j => j.JobId == companyCv.JobId).FirstOrDefaultAsync();
+            
             Enterprise? enterprise = await _dbContext.Enterprises.Where(e => e.EnterpriseInfoId == companyCv.EnterpriseId).FirstOrDefaultAsync();
-            foreach (var item in jobs)
+            companyCvOutDtos.Add(new CompanyCvOutDto()
             {
-                companyCvOutDtos.Add(new CompanyCvOutDto()
-                {
-                    Id = companyCv.Id,
-                    UserId = userId,
-                    CvId = companyCv.CvId,
-                    EnterpriseId = companyCv.EnterpriseId,
-                    EnterpriseName = enterprise.EnterpriseName == null ? "" : enterprise.EnterpriseName,
-                    CvStatus = companyCv.CvStatus,
-                    Salary = item.Salary.ToString(),
-                    Degree = item.Degree == null ? "" : item.Degree,
-                    RecruitmentProfessional = item.RecruitmentProfessional == null ? "" : item.RecruitmentProfessional,
-                    WorkSpace = item.WorkSpace == null ? "" : item.WorkSpace,
-                    JobInfo = item.JobInfo == null ? "" : item.JobInfo
-                });
-            }
+                Id = companyCv.Id,
+                userId = userId,
+                cvId = companyCv.CvId,
+                enterpriseId = companyCv.EnterpriseId,
+                enterpriseName = enterprise.EnterpriseName == null ? "" : enterprise.EnterpriseName,
+                cvStatus = companyCv.CvStatus,
+                salary = job.Salary.ToString(),
+                degree = job.Degree == null ? "" : job.Degree,
+                recruitmentProfessional = job.RecruitmentProfessional == null ? "" : job.RecruitmentProfessional,
+                workSpace = job.WorkSpace == null ? "" : job.WorkSpace,
+                jobInfo = job.JobInfo == null ? "" : job.JobInfo,
+                recruitName = job.RecruitName
+            });
         }
 
-        return Ok(companyCvs);
+        return Ok(companyCvOutDtos);
     }
     
     [HttpGet("GetListCvByCompanyId")]
@@ -104,16 +118,16 @@ public class CompanyCvController : ControllerBase
                 companyCvOutDtos.Add(new CompanyCvOutDto()
                 {
                     Id = companyCv.Id,
-                    UserId = companyCv.UserId,
-                    CvId = companyCv.CvId,
-                    EnterpriseId = companyCv.EnterpriseId,
-                    EnterpriseName = enterprise.EnterpriseName == null ? "" : enterprise.EnterpriseName,
-                    CvStatus = companyCv.CvStatus,
-                    Salary = item.Salary.ToString(),
-                    Degree = item.Degree == null ? "" : item.Degree,
-                    RecruitmentProfessional = item.RecruitmentProfessional == null ? "" : item.RecruitmentProfessional,
-                    WorkSpace = item.WorkSpace == null ? "" : item.WorkSpace,
-                    JobInfo = item.JobInfo == null ? "" : item.JobInfo
+                    userId = companyCv.UserId,
+                    cvId = companyCv.CvId,
+                    enterpriseId = companyCv.EnterpriseId,
+                    enterpriseName = enterprise.EnterpriseName == null ? "" : enterprise.EnterpriseName,
+                    cvStatus = companyCv.CvStatus,
+                    salary = item.Salary.ToString(),
+                    degree = item.Degree == null ? "" : item.Degree,
+                    recruitmentProfessional = item.RecruitmentProfessional == null ? "" : item.RecruitmentProfessional,
+                    workSpace = item.WorkSpace == null ? "" : item.WorkSpace,
+                    jobInfo = item.JobInfo == null ? "" : item.JobInfo
                 });
             }
         }
@@ -139,20 +153,15 @@ public class CompanyCvController : ControllerBase
 
     }
 
-    [HttpDelete("UpdateCompanyCvStatus")]
-    public async Task<ActionResult> UpdateCompanyCvStatus(Guid userId, Guid enterpriseId, int cvStatus)
+    [HttpPut("UpdateCompanyCvStatus")]
+    public async Task<ActionResult> UpdateCompanyCvStatus(UpdateCvStuta updateCvStuta)
     {
-        List<CompanyCv> companyCvs = await _dbContext.CompanyCvs.Where(cc => cc.UserId == userId).ToListAsync();
-        if (companyCvs.Count < 1)
-        {
-            return BadRequest("error");
-        }
-        CompanyCv companyCv = companyCvs.Where(cc => cc.EnterpriseId == enterpriseId).FirstOrDefault();
+        CompanyCv companyCv = await _dbContext.CompanyCvs.Where(cc => cc.Id == updateCvStuta.id).FirstOrDefaultAsync();
         if (companyCv == null)
         {
             return BadRequest("error");
         }
-        _dbContext.CompanyCvs.Where(cc => cc.Id == companyCv.Id).ExecuteUpdate(s => s.SetProperty(p => p.CvStatus, cvStatus));
+        _dbContext.CompanyCvs.Where(cc => cc.Id == updateCvStuta.id).ExecuteUpdate(s => s.SetProperty(p => p.CvStatus, updateCvStuta.cvStatus));
         await _dbContext.SaveChangesAsync();
         return Ok("success");
 
@@ -166,7 +175,7 @@ public class CompanyCvController : ControllerBase
         {
             return BadRequest("error");
         }
-        UserCv userCv = await _dbContext.UserCvs.Where(uc => uc.UserCvId == companyCvInputDto.CvId).FirstOrDefaultAsync();
+        UserCv userCv = await _dbContext.UserCvs.Where(uc => uc.UserId == companyCvInputDto.UserId).FirstOrDefaultAsync();
         if (userCv == null)
         {
             return Ok("你目前尚未生成简历");
@@ -177,16 +186,60 @@ public class CompanyCvController : ControllerBase
             return BadRequest("error");
         }
 
+        List<CompanyCv> companyCvs = await _dbContext.CompanyCvs.Where(cc => cc.UserId == companyCvInputDto.UserId).ToListAsync();
+        if(companyCvs.Count > 0)
+        {
+            var companyCv1 = companyCvs.Where(cc => cc.JobId == companyCvInputDto.JobId).FirstOrDefault();
+            if (companyCv1 != null)
+            {
+                return Ok("你已经投递过改简历");
+            }
+        }
+
         CompanyCv companyCv = new CompanyCv()
         {
             Id = Guid.NewGuid(),
             UserId = companyCvInputDto.UserId,
             CvId = companyCvInputDto.CvId,
             EnterpriseId = companyCvInputDto.EnterpriseId,
+            JobId = companyCvInputDto.JobId,
             CvStatus = 0
         };
         await _dbContext.CompanyCvs.AddAsync(companyCv);
         await _dbContext.SaveChangesAsync();
         return Ok("success");
+    }
+
+    [HttpGet("GetPostedCv")]
+    public async Task<ActionResult> GetPostedCv()
+    {
+        List<CompanyCv> companyCvs = await _dbContext.CompanyCvs.ToListAsync();
+        if (companyCvs.Count < 1)
+        {
+            return Ok();
+        }
+        List<GetUserBaseInfoAndCv> getUserBaseInfoAndCvs = new List<GetUserBaseInfoAndCv>();
+        foreach(var item in companyCvs)
+        {
+            //组织姓名
+            User user = await _dbContext.Users.Where(u => u.UserId == item.UserId).FirstOrDefaultAsync();
+            //组织学校和专业
+            UserCv userCv = await _dbContext.UserCvs.Where(uc => uc.UserCvId == item.CvId).FirstOrDefaultAsync();
+            //组织招聘名称\岗位id
+            Job job = await _dbContext.Jobs.Where(j => j.JobId == item.JobId).FirstOrDefaultAsync();
+            //组织投递状态
+            getUserBaseInfoAndCvs.Add(new GetUserBaseInfoAndCv()
+            {
+                id = item.Id,
+                name = user.UserName,
+                schoolName = userCv.UserSchoolName,
+                majorName = userCv.UserMajor,
+                aimPosition = job.RecruitName,
+                jobId = job.JobId,
+                cvStatus = item.CvStatus
+            });
+        }
+        return Ok(getUserBaseInfoAndCvs);
+
     }
 }
