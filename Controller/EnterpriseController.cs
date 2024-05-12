@@ -50,8 +50,8 @@ public class EnterpriseController : ControllerBase
         return Ok(enterprise);
     }
 
-    [HttpGet("GetListEnterpriseById")]
-    public async Task<ActionResult> GetListEnterpriseById(string enterpriseName)
+    [HttpGet("GetListEnterpriseByName")]
+    public async Task<ActionResult> GetListEnterpriseByName(string enterpriseName)
     {
         var enterprises = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseName == enterpriseName).ToListAsync();
         if (enterprises.Count < 1)
