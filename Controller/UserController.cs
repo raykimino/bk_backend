@@ -104,6 +104,28 @@ public class UserController: ControllerBase
         }).ToListAsync());
     }
 
+    [HttpGet("userListByUserName")]
+    public async Task<ActionResult> userListByUserName(string userName)
+    {
+        List<UserListDto> userListDtos = new List<UserListDto>();
+        List<User> user = await _dbContext.Users.Where(u => u.UserName == userName).ToListAsync();
+        if (user.Count < 1)
+        {
+            return Ok("Not Found!");
+        }
+        foreach (var item in user)
+        {
+            userListDtos.Add(new UserListDto
+            {
+                UserId = item.UserId,
+                UserName = item.UserName,
+                UserType = item.UserType
+            });
+        }
+        return Ok(userListDtos);
+    }
+
+
     [HttpDelete]
     public async Task<ActionResult> DeleteUser(Guid id)
     {

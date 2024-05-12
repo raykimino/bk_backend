@@ -50,6 +50,17 @@ public class EnterpriseController : ControllerBase
         return Ok(enterprise);
     }
 
+    [HttpGet("GetListEnterpriseById")]
+    public async Task<ActionResult> GetListEnterpriseById(string enterpriseName)
+    {
+        var enterprises = await _appDbContext.Set<Enterprise>().Where(e => e.EnterpriseName == enterpriseName).ToListAsync();
+        if (enterprises.Count < 1)
+        {
+            return Ok("Not Found!");
+        }
+        return Ok(enterprises);
+    }
+
     [HttpPost]
     public async Task<ActionResult> InsertEnterprise(EnterpriseDto enterpriseDto)
     {

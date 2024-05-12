@@ -91,6 +91,39 @@ public class JobController : ControllerBase
         return Ok(jobOutDtos);
     }
 
+    [HttpGet("jobListByRecruitName")]
+    public async Task<ActionResult> JobListByRecruitName(string recruitName)
+    {
+        List<Job> jobs = await _dbContext.Jobs.Where(j => j.RecruitName==recruitName).ToListAsync();
+        if (jobs.Count < 1)
+        {
+            return Ok("not job exists");
+        }
+        List<JobOutDto> jobOutDtos = new List<JobOutDto>();
+        foreach (var item in jobs)
+        {
+            Enterprise enterprise = await _dbContext.Enterprises.Where(e => e.EnterpriseInfoId == item.EnterpriseId).FirstOrDefaultAsync();
+            if (enterprise == null)
+            {
+                continue;
+            }
+            jobOutDtos.Add(new JobOutDto()
+            {
+                EnterpriseName = enterprise.EnterpriseName,
+                Degree = item.Degree,
+                EnterpriseId = item.EnterpriseId,
+                JobId = item.JobId,
+                JobInfo = item.JobInfo,
+                Salary = item.Salary,
+                RecruitName = item.RecruitName,
+                RecruitmentProfessional = item.RecruitmentProfessional,
+                WorkSpace = item.WorkSpace
+            });
+        }
+        return Ok(jobOutDtos);
+    }
+
+
     [HttpPost]
     public async Task<ActionResult> CreateNewJob(NewJobDto newJobDto)
     {
